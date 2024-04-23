@@ -1,3 +1,4 @@
+-- Table Customers
 create table Customers
 (
     ID serial primary key not null ,
@@ -10,6 +11,8 @@ create table Customers
     DateInSystem DATE DEFAULT current_date
 );
 
+-- Table Employees
+
 create table Employees
 (
     ID serial primary key not null ,
@@ -21,13 +24,16 @@ create table Employees
     PriorSalary money null
 );
 
+-- Table EmployeesInfo
 create table EmployeesInfo
 (
     ID int not null ,
     MaritalStatus varchar(10) not null,
     BirthDate date not null,
     "Address" varchar(50) not null ,
-    Phone varchar(12) not null
+    Phone varchar(12) not null,
+        foreign key (ID) references Employees(ID)
+            on delete cascade
 );
 
 create table Products
@@ -40,14 +46,18 @@ create table ProductDetails
 (
     ID int not null,
     Color varchar(20) null ,
-    "Description" varchar null
+    "Description" varchar ,
+        foreign key (ID) references Products(ID)
+            on delete cascade
 );
 
 
 create table Stocks
 (
     ProductId int not null ,
-    Qty int default 0
+    Qty int default 0,
+        foreign key (ProductID) references Products(ID)
+            on delete cascade
 );
 
 
@@ -57,7 +67,11 @@ create table Orders
     ID serial primary key not null ,
     CustomerID int null ,
     EmployeeId int null ,
-    OrderDate date default current_date
+    OrderDate date default current_date,
+     foreign key (CustomerID) references Customers(ID)
+         on delete set null ,
+    foreign key (EmployeeID) references Employees(ID)
+        on delete set null
 );
 
 create table OrderDetails
@@ -67,60 +81,27 @@ create table OrderDetails
     ProductID int not null ,
     Qty int not null ,
     Price money not null,
-    TotalPrice money generated always as (Qty * Price) stored
+    TotalPrice money generated always as (Qty * Price) stored,
+    primary key (OrderID, LineItem),
+    foreign key (OrderID) references Orders(ID)
+        on delete  cascade ,
+    foreign key (ProductID) references Products(ID)
+        on delete set null
+
 );
 
 alter table EmployeesInfo
     add
         unique (ID);
 
-alter table EmployeesInfo
-    add
-        foreign key (ID) references Employees(ID)
-            on delete cascade;
-
 alter table ProductDetails
     add
         unique (ID);
 
-alter table ProductDetails
-    add
-        foreign key (ID) references Products(ID)
-            on delete cascade ;
 
 alter table Stocks
     add
         unique (ProductId);
-
-alter table Stocks
-    add
-        foreign key (ProductId) references Products(ID)
-            on delete cascade;
-
-alter table Orders
-    add
-        foreign key (CustomerID) references Customers(ID)
-            on delete set null;
-
-alter table Orders
-    add
-        foreign key (EmployeeId) references Employees(ID)
-            on delete set null;
-
-alter  table  OrderDetails
-    add
-        primary key(OrderID, LineItem);
-
-alter  table  OrderDetails
-    add
-        foreign key (OrderID) references Orders(ID)
-            on delete cascade;
-
-alter table OrderDetails
-    add
-        foreign key (ProductID) references Products(ID)
-            on delete cascade;
-
 
 alter table Customers
         add constraint
@@ -148,6 +129,12 @@ alter table Customers
 alter table  Employees
     add
         check ( PriorSalary < Salary );
+
+alter table Stocks
+    add constraint FK_Stocks_Products
+        foreign key (ProductID)
+            references Products(ID)
+            on delete cascade ;
 
 
 alter table Stocks
