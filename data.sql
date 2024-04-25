@@ -114,3 +114,12 @@ values
     (6, 1, 8, 1, 550),
     (7, 1, 8, 2, 550),
     (7, 2, 9, 1, 222);
+
+insert  into Orders(customerid, employeeid, orderdate)
+values
+    (2, null,current_date),
+    (3, null, current_date);
+
+update orderdetails
+set qty = 5
+where orderid in(25,26,8)
