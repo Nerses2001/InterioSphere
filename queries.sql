@@ -75,7 +75,32 @@ join orders o
                and od.price >  420::money
     join products p
         on od.productid = p.id
-where p.name like '%Netbook' or p.name like '%Laptop'
+where p.name like '%Netbook' or p.name like '%Laptop';
+
+
+select o.orderdate , p.name, pd."Description", od.price, od.qty  from orders o
+    join orderdetails od
+        on o.id = od.orderid
+    join products p
+        on p.id = od.productid
+    join productdetails pd
+        on p.id = pd.id;
+
+select o.orderdate ,
+       p.name,
+       pd."Description",
+       od.price,
+       od.qty
+from orders o
+    join orderdetails od
+        on o.id = od.orderid
+    join products p
+        on p.id = od.productid
+    join productdetails pd
+        on p.id = pd.id
+where p.name like '%Smartphone' and  p.name not like '%iPhone%';
+
+
 
 
 
