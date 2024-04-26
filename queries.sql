@@ -211,27 +211,35 @@ select
 from orders o
     join orderdetails od
         on o.id = od.orderid
-where o.orderdate >= (current_date - interval '4 months')) last,
+where o.orderdate >= (current_date - interval '4 months')) last4,
 
 (select  sum(totalprice)
 from orders o
     join orderdetails od
         on o.id = od.orderid
-where o.orderdate between (current_date - interval '3 months') and current_date) lastTwo,
+where o.orderdate between (current_date - interval '3 months') and current_date) last3,
 (select  sum(totalprice)
 from orders o
     join orderdetails od
         on o.id = od.orderid
-where o.orderdate between (current_date - interval '2 months') and current_date) differnts
+where o.orderdate between (current_date - interval '2 months') and current_date) last2;
 
 
+create  or replace  function fnSumTotalPrice(DateFrom_date date, DateTo_date date)
+    returns money as $$
+    begin
+        return (
+        select sum(TotalPrice)
+        from Orders o
+            join OrderDetails od on o.id = od.OrderID
+        where OrderDate between  DateFrom_date and DateTo_date
+        );
+        end; $$
+    language plpgsql;
 
-
-
-
-
-
-
-
+select
+    (select fnSumTotalPrice ((current_date - interval '3 month')::date, current_date) as "Last3"),
+    (select fnSumTotalPrice ((current_date - interval '2 month')::date, current_date) as "Last2"),
+    (select fnSumTotalPrice ((current_date - interval '4 month')::date, current_date) as "Last3");
 
 
